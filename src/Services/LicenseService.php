@@ -163,7 +163,7 @@ class LicenseService
      */
     public static function getLicenseByDomain(string $domain, string $licenseKey = null): null | License
     {
-        $domain = self::validateDomain($domain);
+        // $domain = self::validateDomain($domain);
 
         if ($domain === null || ($licenseKey && !Str::isUuid($licenseKey))) {
             return null;
