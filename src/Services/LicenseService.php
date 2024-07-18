@@ -77,10 +77,6 @@ class LicenseService
         if ($domain) {
             $domain = self::validateDomain($domain);
 
-            if (self::getLicenseByDomain($domain) !== null) {
-                throw new LicenseException('License already exists for this domain.');
-            }
-
             $data['domain'] = $domain;
         } else if ($userId === null) {
             throw new LicenseException('Domain or user id must be provided.');
