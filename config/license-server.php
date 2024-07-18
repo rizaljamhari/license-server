@@ -108,5 +108,13 @@ return [
      *
      * Default: []
      */
-    'license_middlewares' => []
+    'license_middlewares' => [],
+
+    /**
+     * Authentication
+     *
+     */
+    'authentication' => [
+        'enable_ip_guard' => true,
+    ]
 ];

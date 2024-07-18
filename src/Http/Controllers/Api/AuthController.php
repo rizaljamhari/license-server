@@ -8,6 +8,7 @@ use LaravelReady\LicenseServer\Models\IpAddress;
 use LaravelReady\UltimateSupport\Supports\IpSupport;
 use LaravelReady\LicenseServer\Services\LicenseService;
 use LaravelReady\LicenseServer\Http\Controllers\BaseController;
+use PSpell\Config;
 
 class AuthController extends BaseController
 {
@@ -31,30 +32,28 @@ class AuthController extends BaseController
         if ($license) {
             $license->tokens()->where('name', $domain)->delete();
 
-            $ipAddress = IpAddress::where('license_id', $license->id)->first();
+            // $ipAddress = IpAddress::where('license_id', $license->id)->first();
             $serverIpAddress = IpSupport::getIpAddress();
+            $ipAddress = IpAddress::updateOrCreate([
+                'license_id' => $license->id,
+            ],[
+                'ip_address' => $serverIpAddress['ip_address'],
+            ]);
 
-            if (!$ipAddress) {
-                $ipAddress = IpAddress::create([
-                    'license_id' => $license->id,
-                    'ip_address' => $serverIpAddress['ip_address'],
-                ]);
+            if (Config::get('license-server.authentication.enable_ip_guard') && $ipAddress && $ipAddress->ip_address != $serverIpAddress['ip_address']) {
+                return response([
+                    'status' => false,
+                    'message' => 'This IP address is not allowed. Please contact the license provider.',
+                ], 401);
             }
 
-            if ($ipAddress && $ipAddress->ip_address == $serverIpAddress['ip_address']) {
-                $licenseAccessToken = $license->createToken($domain, ['license-access']);
+            $licenseAccessToken = $license->createToken($domain, ['license-access']);
 
-                return [
-                    'status' => true,
-                    'message' => 'Successfully logged in.',
-                    'access_token' => explode('|', $licenseAccessToken->plainTextToken)[1],
-                ];
-            }
-
-            return response([
-                'status' => false,
-                'message' => 'This IP address is not allowed. Please contact the license provider.',
-            ], 401);
+            return [
+                'status' => true,
+                'message' => 'Successfully logged in.',
+                'access_token' => explode('|', $licenseAccessToken->plainTextToken)[1],
+            ];
         }
 
         return response([
