@@ -38,7 +38,7 @@ class CreateLsLicensesTable extends Migration
                     ->constrained('users')
                     ->onDelete('cascade');
 
-                $table->string('domain', 200)->nullable()->unique();
+                $table->string('domain', 200)->nullable();
                 $table->uuid('license_key')->unique();
                 $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
                 $table->dateTime('expiration_date')->nullable();
