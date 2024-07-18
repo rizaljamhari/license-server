@@ -8,7 +8,7 @@ use LaravelReady\LicenseServer\Models\IpAddress;
 use LaravelReady\UltimateSupport\Supports\IpSupport;
 use LaravelReady\LicenseServer\Services\LicenseService;
 use LaravelReady\LicenseServer\Http\Controllers\BaseController;
-use PSpell\Config;
+use Illuminate\Support\Facades\Config;
 
 class AuthController extends BaseController
 {
